@@ -5,31 +5,40 @@ pipeline {
         stage('Build') {
             steps {
                 sh '''#!/bin/bash
-                echo 'In C or Java, we can compile our program in this step'
-                echo 'In Python, we can build our package here or skip this step'
+                echo 'Setting up Python virtual environment'
+
+                # Create virtual environment if it doesn't exist
+                if [ ! -d ".venv" ]; then
+                    python3 -m venv .venv
+                fi
+
+                # Activate the virtual environment
+                source .venv/bin/activate
+
+                # Upgrade pip
+                pip install --upgrade pip
+
+                # Install dependencies
+                pip install -r requirements.txt
                 '''
             }
         }
         stage('Test') {
             steps {
                 sh '''#!/bin/bash
-                echo 'Test Step: We run testing tool like pytest here'
+                echo 'Running tests with pytest'
 
-                # TODO fill out the path to conda here
-                # sudo /PATH/TO/CONDA init
+                # Activate the virtual environment
+                source .venv/bin/activate
 
-                # TODO Complete the command to run pytest
-                # sudo /PATH/TO/CONDA run -n <Envinronment Name> <Command you want to run>
-
-                echo 'pytest not runned'
-                exit 1 #comment this line after implementing Jenkinsfile
+                # Run pytest
+                pytest
                 '''
-
             }
         }
         stage('Deploy') {
             steps {
-                echo 'In this step, we deploy our porject'
+                echo 'In this step, we deploy our project'
                 echo 'Depending on the context, we may publish the project artifact or upload pickle files'
             }
         }

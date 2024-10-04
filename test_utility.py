@@ -36,6 +36,31 @@ def feature_target_sample(housing_data_sample):
     return (feature_df, target_series)
 
 def test_data_split(feature_target_sample):
-    return_tuple = data_split(*feature_target_sample)
-    # TODO test if the length of return_tuple is 4
-    raise NotImplemented
+    # Unpack the features and target from the fixture
+    features, target = feature_target_sample
+
+    # Call the data_split function
+    X_train, X_test, y_train, y_test = data_split(features, target)
+
+    # Check that four objects are returned
+    assert len((X_train, X_test, y_train, y_test)) == 4
+
+    # Check that the returned objects have the correct type
+    assert isinstance(X_train, pd.DataFrame)
+    assert isinstance(X_test, pd.DataFrame)
+    assert isinstance(y_train, pd.Series)
+    assert isinstance(y_test, pd.Series)
+
+    # Check that the total number of samples is consistent
+    total_samples = len(features)
+    assert len(X_train) + len(X_test) == total_samples
+    assert len(y_train) + len(y_test) == total_samples
+
+    # Check the split proportions
+    test_size = 0.33  # As specified in data_split function
+    expected_test_samples = int(total_samples * test_size)
+    expected_train_samples = total_samples - expected_test_samples
+
+    # Allow for possible rounding differences
+    assert abs(len(X_test) - expected_test_samples) <= 1
+    assert abs(len(X_train) - expected_train_samples) <= 1
